@@ -34,6 +34,7 @@ public class MySQL {
                 Logger.success("§7Die §4MySQL-Datenbank §aerfolgreich §7wurde geladen.", false);
             } catch (SQLException e) {
                 Logger.err("§7Fehler beim Laden der §4MySQL-Datenbank§7.", false);
+                e.printStackTrace();
             }
         }
     }
