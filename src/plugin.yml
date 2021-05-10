@@ -1,6 +1,6 @@
 name: MLGRUSH
 main: net.royalbyte.mlgrush.v2.MLGRush
-version: 2.0.2
+version: 2.0.3
 commands:
   arena:
   setLocs:
