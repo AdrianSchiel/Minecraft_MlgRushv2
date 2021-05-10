@@ -1,6 +1,7 @@
 package net.royalbyte.mlgrush.v2;
 
 import net.royalbyte.mlgrush.v2.arena.ArenaHandler;
+import net.royalbyte.mlgrush.v2.bstats.Metrics;
 import net.royalbyte.mlgrush.v2.commands.Command_Arena;
 import net.royalbyte.mlgrush.v2.commands.Command_build;
 import net.royalbyte.mlgrush.v2.commands.Command_defaultItems;
@@ -19,10 +20,18 @@ import net.royalbyte.mlgrush.v2.locations.Locs;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Scanner;
 
 public class MLGRush extends JavaPlugin {
 
@@ -44,6 +53,9 @@ public class MLGRush extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        Metrics metrics = new Metrics(this, 11305);
+
+
         this.configHandler = new ConfigHandler();
         prefix = (String) ConfigEntry.PREFIX.getValue();
         File file = new File("plugins/MLGRush/", "config.yml");
@@ -51,6 +63,21 @@ public class MLGRush extends JavaPlugin {
 
 
         this.mySQL = new MySQL(ConfigEntry.MYSQL_HOST.getAsString(), ConfigEntry.MYSQL_DATABASE.getAsString(), ConfigEntry.MYSQL_USERNAME.getAsString(), ConfigEntry.MYSQL_PASSWORD.getAsString(), ConfigEntry.MYSQL_PORT.getAsInteger());
+
+        try {
+            String siteVersion = new Scanner(new URL("https://byte-evolve.de/royalbyte/mlgrushversion.html").openStream(), "UTF-8").useDelimiter("\\A").next();
+            if(!getDescription().getVersion().equalsIgnoreCase(siteVersion)){
+                Bukkit.broadcastMessage(getPrefix() + "§4§k-------------------------------------------------");
+                Bukkit.broadcastMessage(getPrefix() + "§cVersion: §b" + getDescription().getVersion() + " §8[§4Veraltet§8]");
+                Bukkit.broadcastMessage(getPrefix() + "§7Lade dir die neuste Version für die weiter Nutzung herunter...");
+                Bukkit.broadcastMessage(getPrefix() + "§a§lhttps://byte-evolve.de/kategorien/mlgrush-v2-by-royalbyte/");
+                Bukkit.broadcastMessage(getPrefix() + "§4§k-------------------------------------------------");
+                Bukkit.getPluginManager().disablePlugin(this);
+                return;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         this.locationHandler = new LocationHandler();
         this.arenaHandler = new ArenaHandler();
@@ -73,6 +100,7 @@ public class MLGRush extends JavaPlugin {
     public void onDisable() {
 
     }
+
 
     private void registerCommands() {
         getCommand("arena").setExecutor(new Command_Arena());
